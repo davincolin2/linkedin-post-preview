@@ -255,6 +255,24 @@ function cmdFixWeekdays() {
   console.log(`fixed weekday on ${fixed} posts`);
 }
 
+// Swap the image of exactly one post, identified by the start of its title.
+function cmdSetImage(titlePrefix, newImage) {
+  if (!titlePrefix || !newImage) throw new Error('usage: node tools/posts.js set-image "<title prefix>" <new_image_wm.jpg>');
+  let html = readIndex();
+  const posts = loadPosts(html);
+  const hits = posts.filter((p) => String(p.title).startsWith(titlePrefix));
+  if (hits.length !== 1) throw new Error(`title prefix matched ${hits.length} posts, need exactly 1`);
+  if (!fs.existsSync(path.join(ROOT, newImage))) throw new Error(`image not found: ${newImage}`);
+  if (posts.some((p) => p.image === newImage)) throw new Error(`image already used: ${newImage}`);
+  const old = hits[0].image;
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(title:\\s*["'\`]${esc(titlePrefix)}[^\\n]*?(?:\\r?\\n\\s*)?image:\\s*["'\`])${esc(old)}(["'\`])`);
+  if (!re.test(html)) throw new Error('could not locate the image field next to that title');
+  html = html.replace(re, `$1${newImage}$2`);
+  fs.writeFileSync(INDEX, html, 'utf8');
+  console.log(`image swapped: "${titlePrefix.slice(0, 50)}" ${old} -> ${newImage}`);
+}
+
 const argv = process.argv.slice(2);
 const cmd = argv[0];
 const positional = argv.slice(1).filter((a, i, arr) => !a.startsWith('--') && arr[i - 1] !== '--start');
@@ -264,7 +282,8 @@ try {
   if (cmd === 'validate') cmdValidate();
   else if (cmd === 'add') cmdAdd(positional[0], argv.includes('--dry'), startVal);
   else if (cmd === 'fix-weekdays') cmdFixWeekdays();
-  else console.log('commands: validate | add <drafts.json> [--dry] [--start today|YYYY-MM-DD] | fix-weekdays');
+  else if (cmd === 'set-image') cmdSetImage(argv[1], argv[2]);
+  else console.log('commands: validate | add <drafts.json> [--dry] [--start today|YYYY-MM-DD] | fix-weekdays | set-image "<title prefix>" <image>');
 } catch (e) {
   console.error('FATAL', e.message);
   process.exit(1);

@@ -90,6 +90,12 @@ It schedules each post on the next free day after the latest buffer post with th
 node tools/posts.js add drafts/YYYY-MM-DD_<slug>.json --start today
 ```
 
+**Replacing an existing post's image** (for example a duplicate): generate, copy as `<slug>_wm.jpg`, watermark, then
+```
+node tools/posts.js set-image "<start of the post title>" <slug>_wm.jpg
+```
+It matches by title (never by array position) and refuses if the title is ambiguous or the image is already used.
+
 ### 6. Commit and push
 ```
 git add index.html drafts/ *_wm.jpg *_wm.png
