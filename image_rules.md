@@ -1,16 +1,7 @@
-# LinkedIn Post Image Rules
+# Image Rules (superseded)
 
-## Watermark (MANDATORY — Every Image)
-Every generated image for a LinkedIn post MUST include this watermark instruction appended to the image generation prompt:
+See WORKFLOW.md, section 3 "Generate images" and section 4 "Watermark".
 
-```
-Bottom-right corner: a small, elegant, semi-transparent watermark reading '@yosefdavinc' in thin white sans-serif font with a small LinkedIn 'in' logo icon next to it, subtly placed so it doesn't obstruct content.
-```
-
-## Brand Style
-- Background: #0A0A0A (dark)
-- Accent: #00D4FF (cyan)
-- Text: #FFFFFF (white)
-- Font: Sans-serif (Inter or similar)
-- Dimensions: 1080x1080
-- Style: Glassmorphism, minimalist, high contrast
+Summary:
+* Black and gold is the brand frame and ambience. Subject imagery uses natural, topic relevant colors.
+* Do NOT put the watermark in the image prompt. Run `python tools/watermark.py <file>` instead.
