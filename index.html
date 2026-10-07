@@ -3126,7 +3126,16 @@ function renderPosts(filter = 'all') {
   let idx = 0;
   const ratings = getRatings();
 
-  posts.forEach((p, i) => {
+  const sortedPosts = [...posts].map((p, originalIndex) => {
+    let y = p.year || 2025;
+    let mStr = p.month ? p.month.split(' ')[0] : 'Jan';
+    const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    let m = months[mStr] !== undefined ? months[mStr] : 0;
+    let d = parseInt(p.date) || 1;
+    return { p, originalIndex, ts: new Date(y, m, d).getTime() };
+  }).sort((a, b) => b.ts - a.ts);
+
+  sortedPosts.forEach(({ p, originalIndex: i }) => {
     const key = getPostKey(p, i);
     const rateData = ratings[key] || null;
     const score = rateData && rateData.score ? rateData.score : 0;
